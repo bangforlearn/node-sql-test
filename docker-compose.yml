@@ -1,0 +1,19 @@
+version: '3.6'
+services:
+  db:
+    image: mariadb
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: default_database
+    ports:
+      - 3309:3306
+  adminer:
+    image: adminer
+    ports:
+      - 8083:8080
+  web:
+    build: ./frontend
+    ports:
+      - 8084:80
+    volumes:
+      - ./frontend/website:/usr/share/nginx/html

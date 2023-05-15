@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Client Test</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3"
+      crossorigin="anonymous"
+    />
+  </head>
+  <body>
+    <div id="test_content"></div>
+    <div
+      style="
+        border: 1px solid #ccc;
+        padding: 20px;
+        width: 500px;
+        margin: auto;
+        margin-top: 30px;
+        box-sizing: content-box;
+      "
+    >
+      <h4>使用者登入</h4>
+      <div class="form-floating mb-3">
+        <input
+          type="text"
+          class="form-control"
+          id="username"
+          placeholder="username"
+        />
+        <label for="username">Username</label>
+      </div>
+      <div class="form-floating">
+        <input
+          type="password"
+          class="form-control"
+          id="password"
+          placeholder="Password"
+        />
+        <label for="password">Password</label>
+      </div>
+      <br />
+      <div class="form-floating">
+        <button
+          type="button"
+          class="btn btn-danger"
+          onclick="callSigninWithInput()"
+        >
+          登入
+        </button>
+      </div>
+    </div>
+
+    <script>
+      function setCookie(cname, cvalue, seconds) {
+        const d = new Date();
+        d.setTime(d.getTime() + seconds * 1000);
+        let expires = 'expires=' + d.toUTCString();
+        document.cookie = cname + '=' + cvalue + ';' + expires + ';path=/';
+      }
+      function getCookie(cname) {
+        let name = cname + '=';
+        let decodedCookie = decodeURIComponent(document.cookie);
+        let ca = decodedCookie.split(';');
+        for (let i = 0; i < ca.length; i++) {
+          let c = ca[i];
+          while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+          }
+          if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+          }
+        }
+        return '';
+      }
+
+      function callSigninWithInput() {
+        const inputUsername = document.getElementById('username').value;
+        const inputPassword = document.getElementById('password').value;
+
+        var data = JSON.stringify({
+          username: inputUsername,
+          password: inputPassword,
+        });
+        var xhr = new XMLHttpRequest();
+
+        xhr.addEventListener('readystatechange', function () {
+          if (this.readyState === 4) {
+            const obj = JSON.parse(this.responseText);
+            if (obj.status === 'success') {
+              const token = obj.data.token;
+              sessionStorage.setItem('logined', true);
+              setCookie('token', token, 360);
+              setCookie('username', inputUsername, 360);
+
+              const interval = setInterval(function () {
+                if (getCookie('token')) {
+                  clearInterval(interval);
+                  alert('登入成功');
+
+                  window.location = '/';
+                }
+              }, 500);
+            } else if (obj.error !== '') {
+              alert(obj.error);
+            }
+          }
+        });
+
+        xhr.open('POST', 'http://localhost:4003/signin');
+        xhr.setRequestHeader('Content-Type', 'application/json');
+
+        xhr.send(data);
+      }
+    </script>
+  </body>
+</html>
