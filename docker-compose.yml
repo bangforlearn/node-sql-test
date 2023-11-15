@@ -1,19 +1,22 @@
-version: '3.6'
+version: '3.8'
 services:
   db:
-    image: mariadb
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: default_database
+    build: .
     ports:
-      - 3309:3306
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: bang_db
+      POSTGRES_USER: bang
+      POSTGRES_PASSWORD: abcd1234
+    volumes:
+      - ./db_data:/var/lib/postgresql/data
   adminer:
     image: adminer
     ports:
       - 8083:8080
-  web:
-    build: ./frontend
-    ports:
-      - 8084:80
-    volumes:
-      - ./frontend/website:/usr/share/nginx/html
+  # web:
+  #   build: ./frontend
+  #   ports:
+  #     - 8084:80
+  #   volumes:
+  #     - ./frontend/website:/usr/share/nginx/html

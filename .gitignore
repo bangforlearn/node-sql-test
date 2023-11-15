@@ -26,3 +26,6 @@ yarn.lock
 storybook-static
 package-lock.json
 dist
+
+mysql-data
+db_data
